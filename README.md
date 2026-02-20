@@ -2,6 +2,9 @@
 
 Este script permite leer un archivo CSV con direcciones, geocodificarlas usando **Nominatim (OpenStreetMap)** y generar un nuevo CSV con latitud y longitud, respetando la estructura del repositorio.
 
+En la seccion de SQL Server hay codigo para generar una base de datos llamada geolocalizacion que contiene informacion de ventas para una distribuidora ficticia de productos farmaceuticos que vende directamente a clientes que son hospitales, clinica y farmacias en toda Argentina y con diferentes problemas en el
+maestro de Clientes.
+
 ---
 
 ## 📂 Estructura del repositorio
@@ -25,6 +28,10 @@ proyecto/
 ---
 
 ## 📌 Funcionalidad
+
+El codigo esta dividido en dos secciones: Python y SQL (para MS SQL Server)
+
+## Seccion Python
 
 - Lee `data/clientes_direcciones.csv`
 - Usa la columna **Direccion**
@@ -78,6 +85,31 @@ python/clientes_georeferenciados.csv
 - El script es tolerante a errores y no se detiene ante direcciones inválidas.
 
 ---
+
+## Seccion MS SQL Server
+
+### Funciones Geo-espaciales
+
+Para ver las funciones geoespaciales puedes ver el documento [Ver funciones](docs/geospatial_functions.md)
+
+### El problema del anillo invertido
+
+En SQL Server (y en el estándar OGC), los polígonos deben seguir reglas estrictas sobre la orientación de sus anillos:
+
+Anillo exterior: debe ir en sentido antihorario (counter-clockwise)
+Anillos interiores (huecos): deben ir en sentido horario (clockwise)
+
+Si los anillos están invertidos, SQL Server puede rechazar la geometría como inválida, interpretar mal qué es el exterior y qué son huecos y lo peor
+es que puede causar errores en operaciones espaciales.
+
+Solucion:
+
+### Solución
+
+```sql
+UPDATE Cities
+SET GeoPolygon = GeoPolygon.ReorientObject();
+```
 
 ## ⚠️ Consideraciones importantes
 
