@@ -16,13 +16,6 @@ WHERE cu.CustomerCity != ci.CityName OR cu.CustomerCity IS NULL;
 UPDATE cu
 SET cu.CustomerCity = ci.CityName
 FROM Customers cu
-INNER JOIN Cities ci ON ci.GeoPolygon.STContains(geography::STGeomFromWKB(cu.GeoLocation.STAsBinary(), cu.GeoLocation.STSrid)) = 1;
+INNER JOIN Cities ci ON ci.GeoPolygon.STContains(geography::STGeomFromWKB(cu.GeoLocation.STAsBinary(), cu.GeoLocation.STSrid)) = 1
+WHERE cu.CustomerCity != ci.CityName OR cu.CustomerCity IS NULL;
 
--- Para los registros que no se pudieron actualizar (sin ciudad encontrada), asignar un valor por defecto
-UPDATE cu
-SET cu.CustomerCity = ISNULL(ci.CityName, 'Ciudad No Registrada')
-FROM Customers cu
-LEFT JOIN Cities ci 
-    ON ci.GeoPolygon.STContains(
-        geography::STGeomFromWKB(cu.GeoLocation.STAsBinary(), cu.GeoLocation.STSrid)
-    ) = 1;

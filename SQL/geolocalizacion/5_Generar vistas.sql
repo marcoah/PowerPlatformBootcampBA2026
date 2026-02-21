@@ -223,3 +223,16 @@ DAX:
 Total Sales := SUM(FactSales[GrossSalesAmount])
 Total Margin := SUM(FactSales[GrossMarginAmount])
 */
+
+-- 8. Vista DimGeografia
+
+CREATE OR ALTER VIEW DimGeografia
+AS 
+SELECT
+    ci.CityName,
+    p.ProvinceName,
+    c.CountryName
+FROM Cities ci
+JOIN Provinces p ON ci.ProvinceID = p.ProvinceID
+JOIN Countries c ON ci.CountryID = c.CountryID;
+GO

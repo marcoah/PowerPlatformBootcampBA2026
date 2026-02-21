@@ -114,3 +114,13 @@ WHERE YEAR(o.OrderDate) = 2025
   )
 GROUP BY cu.CustomerProvince, cu.CustomerCity
 ORDER BY TotalVentas DESC;
+
+--Consulta 2: Obtener la cantidad de clientes por ciudad (Geoespacial)
+SELECT 
+    ci.CityID,
+    ci.CityName,
+    COUNT(DISTINCT cu.CustomerID) AS TotalClientes
+FROM Cities ci
+LEFT JOIN Customers cu ON ci.GeoPolygon.STContains(geography::STGeomFromWKB(cu.GeoLocation.STAsBinary(), cu.GeoLocation.STSrid)) = 1
+GROUP BY ci.CityID, ci.CityName
+ORDER BY TotalClientes DESC;

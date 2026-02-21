@@ -185,10 +185,10 @@ CREATE TABLE Cities (
     CountryID INT NOT NULL,
 
     -- Centroide urbano (rápido, ideal BI)
-    GeoPoint GEOGRAPHY NOT NULL,
+    GeoPoint GEOGRAPHY,
 
     -- Área urbana aproximada
-    GeoPolygon GEOGRAPHY NOT NULL,
+    GeoPolygon GEOGRAPHY,
 
     FOREIGN KEY (CountryID) REFERENCES Countries(CountryID),
     FOREIGN KEY (ProvinceID) REFERENCES Provinces(ProvinceID)
@@ -251,7 +251,7 @@ INSERT INTO Cities (CityName, ProvinceID, CountryID, GeoPoint, GeoPolygon)
 VALUES
 -- 1 CABA
 (
-    'Buenos Aires',
+    'Ciudad Autónoma de Buenos Aires',
     24,
     1,
     geography::Point(-34.6037, -58.3816, 4326),
@@ -606,6 +606,15 @@ VALUES
     ))',4326)
  );
 
+ ALTER TABLE Cities ADD Weight INT;
+    UPDATE Cities
+    SET Weight = CASE 
+        WHEN CityName IN ('Ciudad Autónoma de Buenos Aires') THEN 20
+        WHEN CityName IN ('Córdoba', 'Rosario') THEN 10
+        WHEN CityName IN ('Mendoza', 'San Juan', 'San Luis') THEN 8
+        ELSE 5
+    END;
+
 
 /* ============================================================
    Resolucion del problema del anillo invertido (ver Documentacion)
@@ -666,6 +675,7 @@ GO
 /* ============================================================
    Customers (desde tabla Salud)
 ============================================================ */
+/**/
 SELECT
     id                AS CustomerID,
     longitude,
@@ -684,6 +694,37 @@ FROM salud
 WHERE latitude  IS NOT NULL
   AND longitude IS NOT NULL;
 GO
+
+DECLARE @TotalCities INT;
+
+SELECT @TotalCities = COUNT(*)
+FROM Cities
+WHERE GeoPoint IS NOT NULL;
+
+;WITH WeightedCities AS (
+    SELECT 
+        CityID,
+        CityName,
+        GeoPoint,
+        SUM(Weight) OVER () AS TotalWeight,
+        SUM(Weight) OVER (ORDER BY CityID ROWS UNBOUNDED PRECEDING) AS RunningTotal
+    FROM Cities
+),
+RandomCustomers AS (
+    SELECT 
+        CustomerID,
+        ABS(CHECKSUM(NEWID())) % (SELECT MAX(TotalWeight) FROM WeightedCities) AS rnd
+    FROM Customers
+)
+UPDATE c
+SET
+    c.CustomerCity = wc.CityName,
+    c.Latitude     = wc.GeoPoint.Lat,
+    c.Longitude    = wc.GeoPoint.Long
+FROM Customers c
+JOIN RandomCustomers rc ON c.CustomerID = rc.CustomerID
+JOIN WeightedCities wc 
+    ON rc.rnd < wc.RunningTotal;
 
 -- Clave primaria
 ALTER TABLE Customers
@@ -705,6 +746,18 @@ GO
 CREATE SPATIAL INDEX IX_Customers_GeoLocation
 ON Customers(GeoLocation);
 GO
+
+-- 1493 Nulos
+UPDATE c
+SET 
+    c.CustomerCity = NULL
+FROM Customers c
+JOIN (
+    SELECT TOP 493 CustomerID
+    FROM Customers
+    ORDER BY NEWID()
+) x
+ON c.CustomerID = x.CustomerID;
 
 /* ============================================================
    Vendedores
@@ -1424,4 +1477,18 @@ INNER JOIN Products p
     ON od.ProductID = p.ProductID
 INNER JOIN Customers c
     ON o.CustomerID = c.CustomerID;
+GO
+
+
+-- 8. Vista DimGeografia
+
+CREATE OR ALTER VIEW DimGeografia
+AS 
+SELECT
+    ci.CityName,
+    p.ProvinceName,
+    c.CountryName
+FROM Cities ci
+JOIN Provinces p ON ci.ProvinceID = p.ProvinceID
+JOIN Countries c ON ci.CountryID = c.CountryID;
 GO
