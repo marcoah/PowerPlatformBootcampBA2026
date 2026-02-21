@@ -18,6 +18,8 @@ FROM Customers
 GROUP BY CustomerCity
 ORDER BY CustomerCity, TotalClientes DESC;
 
+USE geolocalizacion;
+GO
 -- Consulta 2: Obtener clientes que tienen ciiudad null pero tienen su geolocalizacion dentro de un polígono de ciudad
 SELECT
     c.CustomerID,

@@ -1479,7 +1479,6 @@ INNER JOIN Customers c
     ON o.CustomerID = c.CustomerID;
 GO
 
-
 -- 8. Vista DimGeografia
 
 CREATE OR ALTER VIEW DimGeografia

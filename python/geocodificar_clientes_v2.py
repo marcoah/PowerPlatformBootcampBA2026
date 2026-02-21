@@ -4,7 +4,6 @@ from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 
-
 def geocodificar_clientes_v2():
     # Rutas
     base_dir = Path(r"C:\data")
