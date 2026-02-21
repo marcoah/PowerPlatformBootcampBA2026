@@ -6,10 +6,7 @@ from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 
 
 def geocodificar_clientes_v2():
-    # base_dir = Path(__file__).resolve().parent
-    # input_csv = base_dir.parent / "data" / "clientes_direcciones.csv"
-    # output_csv = base_dir / "clientes_georeferenciados.csv"
-
+    # Rutas
     base_dir = Path(r"C:\data")
     input_csv = base_dir / "clientes_direcciones.csv"
     output_csv = base_dir / "clientes_georeferenciados.csv"

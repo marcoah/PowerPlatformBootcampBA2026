@@ -1,15 +1,11 @@
 import pandas as pd
 from pathlib import Path
-from geopy.geocoders import Nominatim
+from geopy.geocoders import Nominatim 
 from geopy.extra.rate_limiter import RateLimiter
 
 
 def geocodificar_clientes():
-    # Rutas relativas al archivo actual
-    # base_dir = Path(__file__).resolve().parent
-    # input_csv = base_dir.parent / "data" / "clientes_direcciones.csv"
-    # output_csv = base_dir / "clientes_georeferenciados.csv"
-
+    # Rutas 
     base_dir = Path(r"C:\data")
     input_csv = base_dir / "clientes_direcciones.csv"
     output_csv = base_dir / "clientes_georeferenciados.csv"
