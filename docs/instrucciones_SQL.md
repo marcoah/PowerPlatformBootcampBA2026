@@ -57,16 +57,29 @@ SELECT COUNT(*) AS TotalCiudades FROM Cities;
 ## Estructura de Carpetas
 
 ```
-proyecto/
+PowerPlatformBootcampBA2026/
 │
 ├── data/                    # Archivos de datos a copiar
 │   ├── datos_salud.csv
 │   └── clientes_direcciones.csv
 │
-├── SQL/                     # Scripts SQL
-│   └── crear_base_datos.sql
-│
-└── INSTRUCCIONES_BASE_DATOS.md
+└── SQL/                     # Scripts SQL
+    ├── consultas/
+    │   ├── A. Codigo de prueba.sql
+    │   ├── B. Consultas sobre direcciones_csv.sql
+    │   ├── C. Consultas sobre customers.sql
+    │   ├── D. Consultas de Ventas.sql
+    │   ├── E. Consultas sobre ciudades.sql
+    │   └── F. Updates en Tablas.sql
+    ├── estructura/
+    │   ├── 0. Crear direcciones.sql
+    │   ├── 1. Crear BD geolocalizacion.sql
+    │   ├── 2. Generar tablas geograficas.sql
+    │   ├── 3. Generar estructura.sql
+    │   ├── 4. Generar valores.sql
+    │   └── 5. Generar vistas.sql
+    └── crear_base_datos.sql
+
 ```
 
 ## Solución de Problemas
@@ -104,6 +117,15 @@ proyecto/
 
 Cuando importas polígonos desde fuentes externas (OpenStreetMap, GeoJSON, etc.), los anillos pueden estar invertidos. En `GEOGRAPHY`, esto causa que el polígono represente "todo el mundo EXCEPTO esa área", haciendo que `STContains()` devuelva `1` para todos los puntos.
 
+### El problema del anillo invertido
+
+En SQL Server (y en el estándar OGC), los polígonos deben seguir reglas estrictas sobre la orientación de sus anillos:
+
+- Anillo exterior: debe ir en sentido antihorario (counter-clockwise)
+- Anillos interiores (huecos): deben ir en sentido horario (clockwise)
+
+Si los anillos están invertidos, SQL Server puede rechazar la geometría como inválida, interpretar mal qué es el exterior y qué son huecos y lo peor es que puede causar errores en operaciones espaciales.
+
 ### Solución
 
 ```sql
@@ -135,11 +157,11 @@ FROM Cities;
 Después de crear la base de datos, realizar un backup:
 
 ```sql
-BACKUP DATABASE NombreBaseDatos
-TO DISK = 'C:\Backups\NombreBaseDatos_Inicial.bak'
+BACKUP DATABASE geolocalizacion
+TO DISK = 'C:\Backups\geolocalizacion_Inicial.bak'
 WITH FORMAT,
      MEDIANAME = 'SQLServerBackups',
-     NAME = 'Backup inicial de NombreBaseDatos';
+     NAME = 'Backup inicial de geolocalizacion';
 ```
 
 ## Soporte
@@ -147,4 +169,4 @@ WITH FORMAT,
 Para problemas o consultas adicionales, revisar:
 
 - [Funciones Geoespaciales](funciones_geograficas_sqlserver.md)
-- Documentación oficial de SQL Server: https://docs.microsoft.com/sql-server
+- Documentación oficial de SQL Server: [https://docs.microsoft.com/sql-server](https://docs.microsoft.com/sql-server)

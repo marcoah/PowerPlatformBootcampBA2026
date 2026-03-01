@@ -13,17 +13,33 @@ maestro de Clientes.
 proyecto/
 ├── data/
 │   └── clientes_direcciones.csv
+│   └── datos_salud.csv
 ├── SQL/
 │   └── *.sql
 ├── python/
 │   ├── geocodificar_clientes.py
-│   └── clientes_georeferenciados.csv
 └── README.md
 ```
 
-- **data/**: contiene el CSV original con direcciones sin geocodificar
+- **data/**: contiene el CSV original con direcciones sin geocodificar y el archivo base para la creacion de BD en SQL Server
 - **SQL/**: scripts SQL (no usados por este proceso)
-- **python/**: código Python y salida geocodificada
+- **python/**: código Python para generar archivo csv georeferenciado
+
+---
+
+## Pasos de Instalación de Archivos de datos
+
+Copiar todo el contenido de la carpeta `data` a la ubicación `C:\data` en el servidor:
+
+```bash
+# Desde la línea de comandos (CMD) con permisos de administrador
+xcopy /E /I /Y ".\data" "C:\data"
+```
+
+O manualmente:
+
+1. Crear la carpeta `C:\data` si no existe
+2. Copiar todos los archivos desde la carpeta `data` del proyecto a `C:\data`
 
 ---
 
@@ -88,28 +104,13 @@ python/clientes_georeferenciados.csv
 
 ## Seccion MS SQL Server
 
+### Instrucciones para crear BD en SQL Server
+
+Para ver las instrucciones especificas para el entorno de SQL Server puedes ver el documento [Ver instrucciones SQL Sever](docs/instrucciones_SQL.md)
+
 ### Funciones Geo-espaciales
 
 Para ver las funciones geoespaciales puedes ver el documento [Ver funciones](docs/geospatial_functions.md)
-
-### El problema del anillo invertido
-
-En SQL Server (y en el estándar OGC), los polígonos deben seguir reglas estrictas sobre la orientación de sus anillos:
-
-Anillo exterior: debe ir en sentido antihorario (counter-clockwise)
-Anillos interiores (huecos): deben ir en sentido horario (clockwise)
-
-Si los anillos están invertidos, SQL Server puede rechazar la geometría como inválida, interpretar mal qué es el exterior y qué son huecos y lo peor
-es que puede causar errores en operaciones espaciales.
-
-Solucion:
-
-### Solución
-
-```sql
-UPDATE Cities
-SET GeoPolygon = GeoPolygon.ReorientObject();
-```
 
 ## ⚠️ Consideraciones importantes
 
@@ -123,3 +124,9 @@ SET GeoPolygon = GeoPolygon.ReorientObject();
 ## 📄 Licencia
 
 Uso libre. Mapas felices, desarrolladores también.
+
+---
+
+## Autor
+
+Este repositorio ha sido creado por [Marco Hernandez](https://www.linkedin.com/in/marcoah17/) como parte de la charla **Cómo aprovechar las funciones geográficas de SQL Server en soluciones reales de negocio** para el **POWER PLATFORM BOOTCAMP BUENOS AIRES 2026**.
