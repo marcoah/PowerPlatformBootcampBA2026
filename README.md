@@ -15,7 +15,7 @@ proyecto/
 │   └── clientes_direcciones.csv
 │   └── datos_salud.csv
 ├── SQL/
-│   └── *.sql
+│   └── [Ver instrucciones para SQL Server](docs/instrucciones_SQL.md)
 ├── python/
 │   ├── geocodificar_clientes.py
 └── README.md
@@ -106,7 +106,7 @@ python/clientes_georeferenciados.csv
 
 ### Instrucciones para crear BD en SQL Server
 
-Para ver las instrucciones especificas para el entorno de SQL Server puedes ver el documento [Ver instrucciones SQL Sever](docs/instrucciones_SQL.md)
+Para ver las instrucciones especificas para el entorno de SQL Server puedes ver el documento [Ver instrucciones para SQL Server](docs/instrucciones_SQL.md)
 
 ### Funciones Geo-espaciales
 
